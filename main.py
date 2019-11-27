@@ -1,6 +1,11 @@
 import psycopg2
 import csv
 import xml.etree.ElementTree as ET
+from pykafka import KafkaClient
+import json
+from datetime import datetime
+import uuid
+import collections
 
 def task1():
     f_in = open('1/input.txt')
@@ -54,8 +59,6 @@ def task3():
             f_out.write('%d %d\n' % (sum, multy))
         counter += 1
     f_out.close()
-
-
 
 def task4():
     f_in = open('4/input.txt')
@@ -171,7 +174,6 @@ def easyReverseInteger(x):
     rv = int(str(x * temp)[::-1])
     return temp * rv * (rv < 2 ** 31)
 
-
 def beeline():
     try:
         connection = psycopg2.connect(user="postgres",
@@ -231,8 +233,6 @@ def fill_table_player(a):
     return data
 
 
-
-
 def get_parse1c():
     f_in = open('C:\F\data.xml',encoding='utf-8')
     f_lines = f_in.readlines()
@@ -280,8 +280,6 @@ def fill_table_1c(data):
         #
         #   a.append(s[:-2])
     return a
-
-
 
 
 def create_table_for_1c(a):
@@ -332,6 +330,68 @@ def fill_parse_table(data):
             #print("PostgreSQL connection is closed")
 
 
+def fourletters(original):
+    a = original.strip().split(" ")
+    s = 0
+    for i in a:
+        if len(i) ==4:
+            s +=1
+    return s
+
+def Factor(n):
+    lst = [2]
+    for i in range(3, n + 1, 2):
+        if (i > 10) and (i % 10 == 5):
+            continue
+        for j in lst:
+            if j * j - 1 > i:
+                lst.append(i)
+                break
+            if (i % j == 0):
+                break
+        else:
+            lst.append(i)
+    return lst
+
+def fac1(n):
+    lst = [2]
+    for i in range(3, n + 1, 2):
+        for j in lst:
+            if n-j:
+                lst.append(i)
+                break
+            if (i % j == 0):
+                break
+
+def create_message(data, coordinates):
+    i = 0
+    while i < len(coordinates):
+        data['key'] = data['busline']+'_'+str(uuid.uuid4())
+        data['timestamp'] = str(datetime.utcnow())
+        data['latitude'] = coordinates[i][1]
+        data['longitude'] = coordinates[i][0]
+        messg = json.dumps(data)
+        i+=1
+        print(messg)
+
+def hackerrank_1():
+    inp = [1,2,3,1,2,2,2,3,3]
+    freq = collections.Counter(inp)
+    a = 0
+    # for i in freq:
+    #     if freq[i] % 2 == 0:
+    #         a += freq[i] / 2
+    #     elif freq[i] / 2 >0:
+    #         a += (freq[i]-1)/2
+    for j in freq: a += freq[j]//2
+    print(a)
+
+def repeatedString(s, n):#hackerrank_2
+    q = n//len(s)
+    num = s.count('a')
+    print((q*num)+s[0:n%len(s)].count('a'))
+
+
 
 if __name__ == '__main__':
     #task1()
@@ -343,10 +403,39 @@ if __name__ == '__main__':
     #easy_TwoSum1([2,7,11,15],9)
     #print(easy_TwoSum2([2, 7, 11, 15], 17))
     #print(easyReverseInteger(12345))
-    data = get_parse1c()
-    fill_parse_table(data)
+    #data = get_parse1c()
+    #fill_parse_table(data)
 
     #beeline()
     #parseCSV()
     #new_parse()
     #fill_table_player()
+
+    #original = "This sentence is fine"
+    #ddd = fourletters(original)
+
+    #ans = Factor(9)
+    #print(ans)
+
+    # client = KafkaClient(hosts="localhost:9091")
+    # #topic = client.topics['first_topic']
+    # #producer = topic.get_sync_producer()
+    # #count = 1
+    # #while True:
+    #    message = ("hello-"+str(count)).encode('ascii')
+    #    producer.product(message)
+    #    print(message)
+    #    count += 1
+
+    # input_file = open('bus_line.json')
+    # json_array = json.load(input_file)
+    # coordinates = json_array['features'][0]['geometry']['coordinates']
+    # print(coordinates)
+    # data = {}
+    # data ['busline'] ='00001'
+    # create_message(data,coordinates)
+
+    #hackerrank_1()
+    #repeatedString('a',1000000000000)
+    for i in range(1,11):
+        print(i,end=" ")
